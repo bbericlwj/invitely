@@ -437,6 +437,10 @@ if (hash.indexOf("i=") === 0){
 
 if (payload) { initViewer(payload); } else { initEditor(); }
 
+/* The editor writes its own link to the address bar only when a guest opens one,
+   but a hash swap does not re-run boot — reload so the right mode takes over. */
+window.addEventListener("hashchange", function(){ location.reload(); });
+
 /* ---------- editor ---------- */
 function initEditor(){
   document.getElementById("editor").hidden = false;
