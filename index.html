@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Invitely — make a party invite in 30 seconds</title>
+<meta name="description" content="Fill in the venue, date and details. Get a shareable image and a link for WhatsApp. No sign-up.">
+<meta property="og:title" content="You're invited">
+<meta property="og:description" content="Tap to see the details.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf7f2; --panel:#ffffff; --ink:#1a1714; --muted:#6f6559;
+  --line:#e7e0d5; --accent:#c2410c; --accent-ink:#fff; --radius:14px;
+  --shadow:0 1px 2px rgba(26,23,20,.05), 0 8px 24px rgba(26,23,20,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141210; --panel:#1e1b18; --ink:#f2ede6; --muted:#a1968a;
+    --line:#332e29; --accent:#f97316; --accent-ink:#1a1714;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;letter-spacing:-.01em;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 80px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:Fraunces,serif;font-weight:800;font-size:20px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
+.tag{font-size:13px;color:var(--muted)}
+.hero h1{font-size:clamp(28px,4.6vw,44px);line-height:1.08;max-width:16ch}
+.hero p{color:var(--muted);max-width:52ch;margin:12px 0 0}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:26px;margin-top:30px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+fieldset{border:0;padding:0;margin:0 0 22px}
+legend{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:0 0 10px}
+label{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
+.hint{font-weight:400;color:var(--muted)}
+input,textarea,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+  background:var(--bg);color:var(--ink);font:inherit;font-size:15px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+textarea{resize:vertical;min-height:76px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+.field{margin-bottom:14px}
+.themes{display:flex;gap:10px;flex-wrap:wrap}
+.swatch{width:44px;height:44px;border-radius:11px;border:2px solid transparent;cursor:pointer;padding:0;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.swatch[aria-pressed="true"]{border-color:var(--ink);outline:2px solid var(--panel);outline-offset:-4px}
+.stickycol{position:sticky;top:24px}
+.preview{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:#000;aspect-ratio:4/5}
+.preview canvas{display:block;width:100%;height:100%}
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+button.btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  font:inherit;font-weight:600;padding:12px 16px;border-radius:11px;cursor:pointer;text-align:center}
+button.btn:hover{border-color:var(--ink)}
+button.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+button.btn.primary:hover{filter:brightness(1.06)}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.linkbox{display:flex;gap:8px;margin-top:14px}
+.linkbox input{font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-size:14px;font-weight:600;
+  transition:.22s ease;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.viewer{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px 48px;gap:20px}
+.viewer .card{width:min(440px,100%);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.viewer .card canvas{display:block;width:100%;height:auto}
+.vactions{width:min(440px,100%);display:grid;gap:10px}
+.details{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.details dt{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.details dd{margin:3px 0 14px;font-size:15.5px;white-space:pre-wrap}
+.details dd:last-of-type{margin-bottom:0}
+.footer{margin-top:34px;font-size:13px;color:var(--muted);text-align:center}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ===================== EDITOR ===================== -->
+<div id="editor" class="wrap" hidden>
+  <header class="top">
+    <div class="brand"><span class="dot"></span> Invitely</div>
+    <div class="tag">No sign-up. Nothing stored. The link <em>is</em> the invite.</div>
+  </header>
+
+  <div class="hero">
+    <h1>Make a party invite in 30 seconds.</h1>
+    <p>Type the details, pick a look, then send the image and the link straight into your WhatsApp group. Everything lives inside the link itself — there is no account and no server holding your event.</p>
+  </div>
+
+  <div class="grid">
+    <form class="panel" id="form" autocomplete="off">
+      <fieldset>
+        <legend>The basics</legend>
+        <div class="field">
+          <label for="f-title">Occasion</label>
+          <input id="f-title" name="t" maxlength="60" placeholder="Sam's 30th Birthday">
+        </div>
+        <div class="field">
+          <label for="f-host">Hosted by <span class="hint">— optional</span></label>
+          <input id="f-host" name="h" maxlength="60" placeholder="Priya &amp; Tom">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="f-date">Date</label>
+            <input id="f-date" name="d" type="date">
+          </div>
+          <div class="field">
+            <label for="f-time">Start time</label>
+            <input id="f-time" name="tm" type="time">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-end">Ends <span class="hint">— optional</span></label>
+          <input id="f-end" name="te" type="time">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Where</legend>
+        <div class="field">
+          <label for="f-venue">Venue</label>
+          <input id="f-venue" name="v" maxlength="70" placeholder="The Old Bell">
+        </div>
+        <div class="field">
+          <label for="f-addr">Address <span class="hint">— optional, adds a map button</span></label>
+          <input id="f-addr" name="a" maxlength="140" placeholder="12 Market St, Bristol BS1 4AA">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Anything else</legend>
+        <div class="field">
+          <label for="f-notes">Details <span class="hint">— dress code, bring a bottle, parking…</span></label>
+          <textarea id="f-notes" name="n" maxlength="280" placeholder="Dress code: anything but beige. BYOB — we have the ice."></textarea>
+        </div>
+        <div class="field">
+          <label for="f-rsvp">RSVP to <span class="hint">— optional</span></label>
+          <input id="f-rsvp" name="r" maxlength="80" placeholder="Reply in the group by Fri 12th">
+        </div>
+      </fieldset>
+
+      <fieldset style="margin-bottom:0">
+        <legend>Look</legend>
+        <div class="themes" id="themes" role="group" aria-label="Card theme"></div>
+      </fieldset>
+    </form>
+
+    <div class="stickycol">
+      <div class="preview"><canvas id="cv" width="1080" height="1350" aria-label="Invite preview"></canvas></div>
+      <div class="actions">
+        <button class="btn primary" id="btn-share" type="button">Share invite</button>
+        <div class="btnrow">
+          <button class="btn" id="btn-png" type="button">Download image</button>
+          <button class="btn" id="btn-copy" type="button">Copy link</button>
+        </div>
+        <div class="linkbox">
+          <input id="out-link" readonly aria-label="Invite link">
+        </div>
+        <p class="note" id="lenNote"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== VIEWER ===================== -->
+<div id="viewer" class="viewer" hidden>
+  <div class="card"><canvas id="cv2" width="1080" height="1350" aria-label="Invitation"></canvas></div>
+  <div class="details" id="vdetails"></div>
+  <div class="vactions">
+    <button class="btn primary" id="btn-cal" type="button">Add to calendar</button>
+    <button class="btn" id="btn-map" type="button" hidden>Open in maps</button>
+    <button class="btn" id="btn-pass" type="button">Pass it on</button>
+    <button class="btn" id="btn-make" type="button">Make your own invite</button>
+  </div>
+  <p class="footer">Made with Invitely — the whole invite travels inside the link.</p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- themes ---------- */
+var THEMES = [
+  {id:"dusk",  sw:"linear-gradient(135deg,#2b1055,#7597de)", bg:["#2b1055","#4b2a86","#7597de"], ink:"#fff", soft:"rgba(255,255,255,.72)", rule:"rgba(255,255,255,.28)", accent:"#ffd166"},
+  {id:"ember", sw:"linear-gradient(135deg,#3d0b0b,#f97316)", bg:["#320a0a","#7c2410","#f97316"], ink:"#fff", soft:"rgba(255,255,255,.74)", rule:"rgba(255,255,255,.3)",  accent:"#ffe6b0"},
+  {id:"mint",  sw:"linear-gradient(135deg,#f3fbf5,#a7d7c5)", bg:["#f7fbf7","#e2f1e8","#a7d7c5"], ink:"#12352a", soft:"rgba(18,53,42,.66)", rule:"rgba(18,53,42,.2)",  accent:"#0f766e"},
+  {id:"paper", sw:"linear-gradient(135deg,#fdfbf6,#e7dcc7)", bg:["#fdfbf6","#f4ecdd","#e7dcc7"], ink:"#241c10", soft:"rgba(36,28,16,.66)", rule:"rgba(36,28,16,.22)", accent:"#9a3412"},
+  {id:"neon",  sw:"linear-gradient(135deg,#08080f,#22d3ee)", bg:["#07070d","#0d1b3a","#12314f"], ink:"#eafcff", soft:"rgba(234,252,255,.68)", rule:"rgba(34,211,238,.42)", accent:"#22d3ee"},
+  {id:"rose",  sw:"linear-gradient(135deg,#4a0d2b,#f9a8d4)", bg:["#43092a","#8f2455","#f9a8d4"], ink:"#fff", soft:"rgba(255,255,255,.75)", rule:"rgba(255,255,255,.3)", accent:"#ffe4f0"}
+];
+function theme(id){ for(var i=0;i<THEMES.length;i++){ if(THEMES[i].id===id) return THEMES[i]; } return THEMES[0]; }
+
+/* ---------- url codec (unicode-safe base64url) ---------- */
+function enc(obj){
+  var bytes = new TextEncoder().encode(JSON.stringify(obj)), s = "";
+  for (var i=0;i<bytes.length;i++){ s += String.fromCharCode(bytes[i]); }
+  return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function dec(str){
+  var b = str.replace(/-/g,"+").replace(/_/g,"/");
+  while (b.length % 4){ b += "="; }
+  var bin = atob(b), bytes = new Uint8Array(bin.length);
+  for (var i=0;i<bin.length;i++){ bytes[i] = bin.charCodeAt(i); }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+/* ---------- formatting ---------- */
+function fmtDate(d){
+  if(!d) return "";
+  var p = d.split("-"); if(p.length!==3) return d;
+  var dt = new Date(+p[0], +p[1]-1, +p[2]);
+  if (isNaN(dt.getTime())) return d;
+  return dt.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+function fmtTime(t){
+  if(!t) return "";
+  var p = t.split(":"); if(p.length<2) return t;
+  var dt = new Date(2000,0,1,+p[0],+p[1]);
+  return dt.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+}
+function timeRange(d){
+  var a = fmtTime(d.tm), b = fmtTime(d.te);
+  return (a && b) ? (a + " – " + b) : (a || b || "");
+}
+
+/* ---------- canvas drawing ---------- */
+function wrap(ctx, text, maxW){
+  var segs = String(text).split("\n"), out = [];
+  for (var s = 0; s < segs.length; s++){ out = out.concat(wrapOne(ctx, segs[s], maxW)); }
+  return out;
+}
+function wrapOne(ctx, text, maxW){
+  var words = String(text).split(/\s+/), lines = [], line = "";
+  for (var i=0;i<words.length;i++){
+    var t = line ? (line + " " + words[i]) : words[i];
+    if (ctx.measureText(t).width > maxW && line){ lines.push(line); line = words[i]; }
+    else { line = t; }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+function fitFont(ctx, text, maxW, maxLines, start, min, family, weight){
+  var size = start, l;
+  while (size > min){
+    ctx.font = weight + " " + size + "px " + family;
+    l = wrap(ctx, text, maxW);
+    if (l.length <= maxLines) return {size:size, lines:l};
+    size -= 4;
+  }
+  ctx.font = weight + " " + min + "px " + family;
+  return {size:min, lines:wrap(ctx, text, maxW).slice(0, maxLines)};
+}
+var SERIF = "Fraunces, Georgia, serif";
+var SANS  = "Inter, system-ui, sans-serif";
+
+function draw(cv, d){
+  var ctx = cv.getContext("2d"), W = cv.width, H = cv.height, th = theme(d.th);
+
+  var g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, th.bg[0]); g.addColorStop(0.55, th.bg[1]); g.addColorStop(1, th.bg[2]);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  var r = ctx.createRadialGradient(W*0.78, H*0.16, 0, W*0.78, H*0.16, W*0.85);
+  r.addColorStop(0, "rgba(255,255,255,.20)"); r.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = r; ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = th.rule; ctx.lineWidth = 2;
+  ctx.strokeRect(56, 56, W-112, H-112);
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  var TOP = 176, BOTTOM = H - 150, maxW = W - 256;
+
+  /* Build the card as a list of blocks, then scale the whole thing to fit. */
+  var items = [];
+  items.push({kind:"text", text:(d.h ? (d.h + " invite you to") : "You are invited to").toUpperCase(),
+              family:SANS, weight:"700", size:30, lh:1.34, track:6, color:th.accent, maxLines:2, gap:44});
+  items.push({kind:"text", text:(d.t || "The Party"), family:SERIF, weight:"800",
+              size:112, lh:1.1, track:0, color:th.ink, maxLines:3, gap:46});
+  items.push({kind:"rule", gap:56});
+
+  function pair(label, value, big){
+    if (!value) return;
+    items.push({kind:"text", text:label.toUpperCase(), family:SANS, weight:"600", size:24,
+                lh:1.3, track:4, color:th.soft, maxLines:1, gap:14});
+    items.push({kind:"text", text:value, family: big ? SERIF : SANS, weight: big ? "600" : "500",
+                size: big ? 52 : 40, lh:1.28, track:0, color:th.ink, maxLines:3, gap:38});
+  }
+  pair("When", [fmtDate(d.d), timeRange(d)].filter(Boolean).join("\n"), true);
+  pair("Where", [d.v, d.a].filter(Boolean).join("\n"), true);
+  pair("Details", d.n, false);
+  pair("RSVP", d.r, false);
+  if (items.length && items[items.length-1].gap) items[items.length-1].gap = 0;
+
+  function layout(scale){
+    var total = 0, i, it, size, lines;
+    for (i = 0; i < items.length; i++){
+      it = items[i];
+      if (it.kind === "rule"){ it.h = 2; total += 2 + it.gap * scale; continue; }
+      size = Math.max(20, Math.round(it.size * scale));
+      ctx.font = it.weight + " " + size + "px " + it.family;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = (it.track * scale) + "px";
+      lines = wrap(ctx, it.text, maxW);
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+      if (lines.length > it.maxLines){
+        /* too many lines even at this scale — let the fitter shrink this one further */
+        var f = fitFont(ctx, it.text, maxW, it.maxLines, size, 20, it.family, it.weight);
+        size = f.size; lines = f.lines;
+      }
+      it._size = size; it._lines = lines;
+      it.h = lines.length * size * it.lh;
+      total += it.h + it.gap * scale;
+    }
+    return total;
+  }
+
+  var avail = BOTTOM - TOP, scale = 1, total = layout(1);
+  while (total > avail && scale > 0.5){ scale -= 0.05; total = layout(scale); }
+
+  var y = TOP + Math.max(0, (avail - total) / 2);
+  for (var i = 0; i < items.length; i++){
+    var it = items[i];
+    if (it.kind === "rule"){
+      ctx.strokeStyle = th.rule; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(W/2 - 90, y); ctx.lineTo(W/2 + 90, y); ctx.stroke();
+      y += 2 + it.gap * scale;
+      continue;
+    }
+    ctx.font = it.weight + " " + it._size + "px " + it.family;
+    ctx.fillStyle = it.color;
+    if ("letterSpacing" in ctx) ctx.letterSpacing = (it.track * scale) + "px";
+    for (var j = 0; j < it._lines.length; j++){
+      ctx.fillText(it._lines[j], W/2, y + it._size * 0.82 + j * it._size * it.lh);
+    }
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    y += it.h + it.gap * scale;
+  }
+
+  ctx.fillStyle = th.soft; ctx.font = "500 24px " + SANS;
+  ctx.fillText("Tap the link for the full details", W/2, H - 96);
+}
+
+/* ---------- shared helpers ---------- */
+var toastEl = document.getElementById("toast"), toastT;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(function(){ toastEl.classList.remove("show"); }, 2200);
+}
+function fileName(d){
+  var base = (d.t || "invite").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  return (base || "invite") + ".png";
+}
+function canvasBlob(cv){
+  return new Promise(function(res){ cv.toBlob(res, "image/png"); });
+}
+function saveBlob(blob, name){
+  var url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+}
+function downloadPNG(cv, d){
+  canvasBlob(cv).then(function(blob){ saveBlob(blob, fileName(d)); toast("Image saved"); });
+}
+function shareText(d, link){
+  var bits = [d.t || "You are invited"];
+  var when = [fmtDate(d.d), timeRange(d)].filter(Boolean).join(", ");
+  if (when) bits.push(when);
+  if (d.v || d.a) bits.push([d.v, d.a].filter(Boolean).join(", "));
+  bits.push(link);
+  return bits.join("\n");
+}
+function shareInvite(cv, d, link){
+  var text = shareText(d, link);
+  return canvasBlob(cv).then(function(blob){
+    var file = new File([blob], fileName(d), {type:"image/png"});
+    if (navigator.canShare && navigator.canShare({files:[file]})){
+      return navigator.share({files:[file], text:text});
+    }
+    if (navigator.share){ return navigator.share({title:d.t || "You are invited", text:text}); }
+    return Promise.reject({name:"NoShare"});
+  }).catch(function(e){
+    if (e && e.name === "AbortError") return;
+    navigator.clipboard.writeText(text).then(
+      function(){ toast("Invite text copied — paste it into WhatsApp"); },
+      function(){ toast("Copy the link below to share"); }
+    );
+    downloadPNG(cv, d);
+  });
+}
+function icsStamp(dateStr, timeStr, fallbackHour){
+  if (!dateStr) return null;
+  var p = dateStr.split("-"), t = (timeStr || "").split(":");
+  var hasTime = t.length >= 2;
+  var dt = new Date(+p[0], +p[1]-1, +p[2], hasTime ? +t[0] : fallbackHour, hasTime ? +t[1] : 0);
+  if (isNaN(dt.getTime())) return null;
+  function z(n){ return (n < 10 ? "0" : "") + n; }
+  return dt.getFullYear() + z(dt.getMonth()+1) + z(dt.getDate()) + "T" +
+         z(dt.getHours()) + z(dt.getMinutes()) + "00";
+}
+function makeICS(d){
+  var start = icsStamp(d.d, d.tm, 19);
+  if (!start) return null;
+  var end = icsStamp(d.d, d.te, 23) || start;
+  function esc(s){ return String(s || "").replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n"); }
+  var desc = [d.n, d.r ? ("RSVP: " + d.r) : "", location.href].filter(Boolean).map(esc).join("\\n\\n");
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Invitely//EN","BEGIN:VEVENT",
+    "UID:" + Date.now() + "@invitely",
+    "DTSTART:" + start, "DTEND:" + end,
+    "SUMMARY:" + esc(d.t || "Party"),
+    "LOCATION:" + esc([d.v, d.a].filter(Boolean).join(", ")),
+    "DESCRIPTION:" + desc,
+    "END:VEVENT","END:VCALENDAR"].join("\r\n");
+}
+
+/* ---------- boot ---------- */
+var fontsReady = (document.fonts && document.fonts.ready)
+  ? document.fonts.ready.catch(function(){}) : Promise.resolve();
+
+var hash = location.hash.replace(/^#/, "");
+var payload = null;
+if (hash.indexOf("i=") === 0){
+  try { payload = dec(hash.slice(2)); } catch (e) { payload = null; }
+}
+
+if (payload) { initViewer(payload); } else { initEditor(); }
+
+/* ---------- editor ---------- */
+function initEditor(){
+  document.getElementById("editor").hidden = false;
+  var cv = document.getElementById("cv"), form = document.getElementById("form");
+  var out = document.getElementById("out-link"), lenNote = document.getElementById("lenNote");
+  var themeId = "dusk", state = {th:themeId};
+
+  var soon = new Date(Date.now() + 12*864e5);
+  function z(n){ return (n<10?"0":"")+n; }
+  document.getElementById("f-date").value = soon.getFullYear()+"-"+z(soon.getMonth()+1)+"-"+z(soon.getDate());
+  document.getElementById("f-time").value = "19:30";
+
+  var themes = document.getElementById("themes");
+  THEMES.forEach(function(t){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "swatch"; b.style.background = t.sw;
+    b.title = t.id; b.setAttribute("aria-label", "Theme: " + t.id);
+    b.setAttribute("aria-pressed", String(t.id === themeId));
+    b.addEventListener("click", function(){
+      themeId = t.id;
+      Array.prototype.forEach.call(themes.children, function(c){ c.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      render();
+    });
+    themes.appendChild(b);
+  });
+
+  function collect(){
+    var d = {th: themeId};
+    ["t","h","d","tm","te","v","a","n","r"].forEach(function(k){
+      var el = form.elements[k];
+      if (el && el.value.trim()) d[k] = el.value.trim();
+    });
+    return d;
+  }
+  function link(d){ return location.origin + location.pathname + "#i=" + enc(d); }
+
+  function render(){
+    state = collect();
+    draw(cv, Object.assign({t:"Your party", v:"The venue"}, state));
+    var url = link(state);
+    out.value = url;
+    lenNote.textContent = url.length > 1800
+      ? "This link is getting long (" + url.length + " characters) — trim the details a little so every app handles it cleanly."
+      : "Everything is inside the link — nothing is stored on a server.";
+  }
+
+  form.addEventListener("input", render);
+  render();
+  fontsReady.then(render);
+
+  document.getElementById("btn-share").addEventListener("click", function(){ shareInvite(cv, state, link(state)); });
+  document.getElementById("btn-png").addEventListener("click", function(){ downloadPNG(cv, state); });
+  document.getElementById("btn-copy").addEventListener("click", function(){
+    var url = link(state);
+    navigator.clipboard.writeText(url).then(
+      function(){ toast("Link copied"); },
+      function(){ out.focus(); out.select(); toast("Press Ctrl+C to copy"); }
+    );
+  });
+}
+
+/* ---------- viewer ---------- */
+function initViewer(d){
+  document.getElementById("viewer").hidden = false;
+  var cv = document.getElementById("cv2");
+  document.title = (d.t || "You are invited") + " — invitation";
+
+  function paint(){ draw(cv, d); }
+  paint(); fontsReady.then(paint);
+
+  var dl = document.createElement("dl");
+  function add(label, value){
+    if (!value) return;
+    var dt = document.createElement("dt"); dt.textContent = label;
+    var dd = document.createElement("dd"); dd.textContent = value;
+    dl.appendChild(dt); dl.appendChild(dd);
+  }
+  add("What", d.t);
+  add("Host", d.h);
+  add("When", [fmtDate(d.d), timeRange(d)].filter(Boolean).join(" · "));
+  add("Where", [d.v, d.a].filter(Boolean).join("\n"));
+  add("Details", d.n);
+  add("RSVP", d.r);
+  document.getElementById("vdetails").appendChild(dl);
+
+  var cal = document.getElementById("btn-cal"), ics = makeICS(d);
+  if (!ics) { cal.hidden = true; }
+  else {
+    cal.addEventListener("click", function(){
+      var name = ((d.t || "invite").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"") || "invite") + ".ics";
+      saveBlob(new Blob([ics], {type:"text/calendar;charset=utf-8"}), name);
+    });
+  }
+
+  var map = document.getElementById("btn-map");
+  if (d.a || d.v){
+    map.hidden = false;
+    map.addEventListener("click", function(){
+      window.open("https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent([d.v, d.a].filter(Boolean).join(", ")), "_blank", "noopener");
+    });
+  }
+
+  document.getElementById("btn-pass").addEventListener("click", function(){ shareInvite(cv, d, location.href); });
+  document.getElementById("btn-make").addEventListener("click", function(){
+    location.href = location.origin + location.pathname;
+  });
+}
+
+})();
+</script>
+</body>
+</html>
