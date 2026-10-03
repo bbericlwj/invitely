@@ -202,3 +202,25 @@ Compiled from the planning sheet *"2026 Preschool Exchange Hokkaido Trip (3th-18
 - [ ] Check Furano Ropeway hours for 15 Oct
 - [ ] Confirm meals for 11–16 Oct (the Meals tab was only partly readable)
 - [ ] The Week 1 tab lists 鮨かわ as lunch on 5 Oct, but the Meals tab has it as dinner on 6 Oct. Pick one.
+
+---
+
+## 9. More ideas nearby (suggestions, not booked)
+
+**Urakawa / Hidaka:** thoroughbred farms (view horses from the roadside), riding experiences in Urakawa, Cape Erimo (seals, about 1 h), Nijukken Road in Shinhidaka, and Nibutani Ainu Culture Museum in Biratori (on the Chitose route).
+
+**Asahikawa / Higashikawa / Biei:** Asahikawa Ramen Village, Biei Patchwork Road (Ken & Mary Tree), Shirahige Falls (next to the Blue Pond), Asahidake Ropeway (possible early snow), Otokoyama Sake Brewery, and Higashikawa town cafés.
+
+**Furano:** Furano Marché, Furano Winery and Jam Garden, Furano Delice desserts.
+
+## 10. Useful info
+
+- **Weather:** about 5–15 °C; sunset around 5 pm.
+- **Driving:** Singapore licence plus an International Driving Permit; child seats required under 6; deer at dusk; regular fuel; ask for an ETC card.
+- **Bears:** stay on marked paths and don't leave food out.
+- **Arrival:** fill in Visit Japan Web before the flight.
+- **Power:** 100 V Type A, so bring an adapter.
+- **Money:** some rural places are cash only; 7-Eleven ATMs take foreign cards; no tipping. Tax-free shopping from ¥5,000 with your passport.
+- **Onsen:** no swimwear; tattoos may not be allowed.
+- **Connectivity:** get an eSIM and download offline maps.
+- **Emergency:** police 110, ambulance/fire 119, Japan Visitor Hotline 050-3816-2787.
